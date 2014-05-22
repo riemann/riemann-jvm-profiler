@@ -150,6 +150,9 @@
   [agg-sample target-load]
   (let [running (promise)]
     (future
+      (doto (Thread/currentThread)
+        (.setDaemon true)
+        (.setName "riemann-jvm-profiler sampler"))
       (loop [last-t0 (System/nanoTime)]
         (when (deref running 0 true)
           (recur
@@ -182,6 +185,9 @@
   (let [anchor  (measure/linear-time)
         running (promise)]
     (future
+      (doto (Thread/currentThread)
+        (.setDaemon true)
+        (.setName "riemann-jvm-profiler reporter"))
       (loop []
         (when (deref running
                      (* 1000 (- dt (mod (- (measure/linear-time) anchor) dt)))
