@@ -3,22 +3,21 @@
             [riemann.client.http :as client])
   (:import (java.lang StackTraceElement)))
 
-(defn http-client
-  [& args]
-  (apply client/client args))
+(def http-client client/client)
+(def localhost client/localhost)
 
-(def tags
-  ["jvm" "profile"])
+(def tags ["jvm" "profile"])
 
 (defn report
   "Send information about stack statistics to Riemann."
-  [client dt prefix stats]
+  [client dt host prefix stats]
   (let [{:keys [rate sample]} stats]
     (->> sample
          stack/hotspots
          (map (fn [[^StackTraceElement frame
                     {:keys [self-time top-trace top-trace-time]}]]
-                {:service     (str prefix "profiler fn "
+                {:host        (or host (client/localhost))
+                 :service     (str prefix "profiler fn "
                                    (.getClassName frame) " "
                                    (.getMethodName frame))
                  :file        (.getFileName frame)
@@ -28,7 +27,8 @@
                  :metric      self-time
                  :ttl         (* 2 dt)
                  :tags        tags}))
-         (concat [{:service (str prefix "profiler rate")
+         (concat [{:host    host
+                   :service (str prefix "profiler rate")
                    :state   "ok"
                    :metric  rate
                    :ttl     (* 2 dt)
@@ -47,6 +47,7 @@
               breaking Hadoop. Shoot me a PR?
   :prefix     Service prefix for distinguishing this telemetry from other apps
               (default \"\")
+  :host       Override the hostname (default: nil; calls (localhost))
   :dt         How often to send telemetry events to Riemann, in seconds
               (default 5)
   :load       Target fraction of one core's CPU time to use for profiling
@@ -56,7 +57,10 @@
   (let [dt (or (:dt opts) 5)]
     (stack/start (or (:load opts) 0.02)
                  dt
-                 (partial report (:client opts) dt (or (:prefix opts) "")))))
+                 (partial report (:client opts)
+                          dt
+                          (:host opts)
+                          (or (:prefix opts) "")))))
 
 (defn stop!
   "Stop profiling."
