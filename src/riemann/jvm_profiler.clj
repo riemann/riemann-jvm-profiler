@@ -18,7 +18,7 @@
          stack/hotspots
          (map (fn [[^StackTraceElement frame
                     {:keys [self-time top-trace top-trace-time]}]]
-                {:service     (str prefix "profile fn "
+                {:service     (str prefix "profiler fn "
                                    (.getClassName frame) " "
                                    (.getMethodName frame))
                  :file        (.getFileName frame)
@@ -28,7 +28,7 @@
                  :metric      self-time
                  :ttl         (* 2 dt)
                  :tags        tags}))
-         (concat [{:service (str prefix "profile rate")
+         (concat [{:service (str prefix "profiler rate")
                    :state   "ok"
                    :metric  rate
                    :ttl     (* 2 dt)
