@@ -143,16 +143,23 @@
   []
   (AggSample. (atom (new-agg-state (System/nanoTime)))))
 
+(defmacro daemon
+  "Starts a daemon thread with the given name."
+  [name & body]
+  `(doto (Thread. (fn ~'body []
+                    ~@body))
+     (.setName ~name)
+     (.setDaemon true)
+     (.start)))
+
 (defn sampler!
   "Samples the stack repeatedly, merging results into the given atom. Tries to
   only run for load-target fraction of a thread's time; 0 means never sample, 1
-  means run all the time. Returns a future."
+  means run all the time. Returns a promise which, when delivered false,
+  stops the sampler."
   [agg-sample target-load]
   (let [running (promise)]
-    (future
-      (doto (Thread/currentThread)
-        (.setDaemon true)
-        (.setName "riemann-jvm-profiler sampler"))
+    (daemon "riemann-jvm-profiler sampler"
       (loop [last-t0 (System/nanoTime)]
         (when (deref running 0 true)
           (recur
@@ -184,10 +191,7 @@
   [agg-sample dt f]
   (let [anchor  (measure/linear-time)
         running (promise)]
-    (future
-      (doto (Thread/currentThread)
-        (.setDaemon true)
-        (.setName "riemann-jvm-profiler reporter"))
+    (daemon "riemann-jvm-profiler reporter"
       (loop []
         (when (deref running
                      (* 1000 (- dt (mod (- (measure/linear-time) anchor) dt)))
