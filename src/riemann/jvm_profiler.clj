@@ -45,6 +45,8 @@
               riemann-clojure-client and support its interfaces as well, but
               we can't add the official client as a dep to the jar without
               breaking Hadoop. Shoot me a PR?
+  :host       Used to construct a client if no client is given.
+  :port       Riemann HTTP port.
   :prefix     Service prefix for distinguishing this telemetry from other apps
               (default \"\")
   :host       Override the hostname (default: nil; calls (localhost))
@@ -54,10 +56,12 @@
               (default 0.02)"
   [opts]
   (assert :client opts)
-  (let [dt (or (:dt opts) 5)]
+  (let [dt     (or (:dt opts) 5)
+        client (or (:client opts)
+                   (http-client (select-keys opts [:host :port])))]
     (stack/start (or (:load opts) 0.02)
                  dt
-                 (partial report (:client opts)
+                 (partial report client
                           dt
                           (:host opts)
                           (or (:prefix opts) "")))))
@@ -66,3 +70,22 @@
   "Stop profiling."
   [process]
   (stack/stop! process))
+
+(defonce global
+  (atom nil))
+
+(defn start-global!
+  "Shortcut for programs that only want to start a single instance of a
+  profiler. Calls (start) once, and ignores successive invocations, even
+  through reloads. Returns the global profiler."
+  [& args]
+  (or @global
+      (locking global
+        (reset! global (apply start args)))))
+
+(defn stop-global!
+  "Stop the global profiler."
+  []
+  (locking global
+    (stop! @global)
+    (reset! global nil)))
