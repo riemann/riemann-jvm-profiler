@@ -109,7 +109,7 @@
        persistent!
        (sort-by (comp :time val))
        reverse
-       (take 10)))
+       (take 32)))
 
 (defn new-agg-state
   "New state of an AggSample. Takes a time in nanos."
