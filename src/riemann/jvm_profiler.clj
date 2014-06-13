@@ -49,7 +49,7 @@
   :port       Riemann HTTP port.
   :prefix     Service prefix for distinguishing this telemetry from other apps
               (default \"\")
-  :host       Override the hostname (default: nil; calls (localhost))
+  :localhost  Override the hostname (default: nil; calls (localhost))
   :dt         How often to send telemetry events to Riemann, in seconds
               (default 5)
   :load       Target fraction of one core's CPU time to use for profiling
@@ -63,7 +63,7 @@
                  dt
                  (partial report client
                           dt
-                          (:host opts)
+                          (:localhost opts)
                           (or (:prefix opts) "")))))
 
 (defn stop!
