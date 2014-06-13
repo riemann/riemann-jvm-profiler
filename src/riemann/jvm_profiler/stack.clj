@@ -64,6 +64,7 @@
   "Formats a stacktrace as a nice string."
   [trace]
   (->> trace
+       reverse
        (map (fn [^StackTraceElement frame]
               (str (.getClassName frame) " "
                    (.getMethodName frame) " ("
