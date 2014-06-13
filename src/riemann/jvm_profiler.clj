@@ -27,7 +27,7 @@
                  :metric      self-time
                  :ttl         (* 2 dt)
                  :tags        tags}))
-         (concat [{:host    host
+         (concat [{:host    (or host (client/localhost))
                    :service (str prefix "profiler rate")
                    :state   "ok"
                    :metric  rate
