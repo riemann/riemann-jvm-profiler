@@ -1,7 +1,8 @@
 (ns riemann.jvm-profiler
   (:require [riemann.jvm-profiler.stack :as stack]
             [riemann.client.http :as client])
-  (:import (java.lang StackTraceElement)))
+  (:import (java.lang StackTraceElement)
+           (java.lang.management ManagementFactory)))
 
 (def http-client client/client)
 (def localhost client/localhost)
@@ -49,7 +50,8 @@
   :port       Riemann HTTP port.
   :prefix     Service prefix for distinguishing this telemetry from other apps
               (default \"\")
-  :localhost  Override the hostname (default: nil; calls (localhost))
+  :localhost  Override the event hostname (default: nil; calls (localhost))
+  :localhost-pid?  If truthy, use pid@host as the event hostname.
   :dt         How often to send telemetry events to Riemann, in seconds
               (default 5)
   :load       Target fraction of one core's CPU time to use for profiling
@@ -63,7 +65,9 @@
                  dt
                  (partial report client
                           dt
-                          (:localhost opts)
+                          (if (:localhost-pid? opts)
+                            (.. ManagementFactory getRuntimeMXBean getName)
+                            (:localhost opts))
                           (or (:prefix opts) "")))))
 
 (defn stop!
