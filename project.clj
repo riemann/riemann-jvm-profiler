@@ -1,4 +1,4 @@
-(defproject riemann-jvm-profiler "0.1.0-SNAPSHOT"
+(defproject riemann-jvm-profiler "0.1.0"
   :description "Distributed JVM profiling for Riemann."
   :url "http://github.com/riemann/riemann-jvm-profiler"
   :license {:name "Eclipse Public License"
@@ -7,7 +7,7 @@
                  [org.clojure/tools.logging "0.2.6"]
                  [cheshire "5.3.1"]
                  [interval-metrics "1.0.0"]
-                 [clj-radix "0.1.0-SNAPSHOT"]
+                 [clj-radix "0.1.0"]
                  [http-kit "2.1.16"]
                  [clj-time "0.7.0"]]
   :java-source-paths ["src/riemann"]

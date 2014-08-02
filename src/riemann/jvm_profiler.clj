@@ -46,8 +46,9 @@
               riemann-clojure-client and support its interfaces as well, but
               we can't add the official client as a dep to the jar without
               breaking Hadoop. Shoot me a PR?
-  :host       Used to construct a client if no client is given.
-  :port       Riemann HTTP port.
+  :host       Riemann server hostname (used to construct a client if none is
+              provided)
+  :port       Riemann HTTP port (default 5556)
   :prefix     Service prefix for distinguishing this telemetry from other apps
               (default \"\")
   :localhost  Override the event hostname (default: nil; calls (localhost))
