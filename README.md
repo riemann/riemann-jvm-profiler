@@ -18,8 +18,8 @@ each JVM process. The default Riemann websocket port is `5556`.
 ### As a library
 
 You can add riemann-jvm-profiler artifact to your Maven or Leiningen project
-via Clojars, and somewhere in your application startup code, invoke the
-profiler programmatically.
+via [Clojars](https://clojars.org/riemann-jvm-profiler), and somewhere in your
+application startup code, invoke the profiler programmatically.
 
 ```clj
 (ns my-app.bin
