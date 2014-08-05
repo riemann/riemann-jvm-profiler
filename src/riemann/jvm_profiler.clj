@@ -1,6 +1,7 @@
 (ns riemann.jvm-profiler
   (:require [riemann.jvm-profiler.stack :as stack]
-            [riemann.client.http :as client])
+            [riemann.client.http :as client]
+            [clojure.string :as string])
   (:import (java.lang StackTraceElement)
            (java.lang.management ManagementFactory)))
 
@@ -18,7 +19,7 @@
          (map (fn [[^StackTraceElement frame
                     {:keys [self-time top-trace top-trace-time]}]]
                 {:host        (or host (client/localhost))
-                 :service     (str (trim prefix) " profiler fn "
+                 :service     (str (string/trim prefix) " profiler fn "
                                    (.getClassName frame) " "
                                    (.getMethodName frame))
                  :file        (.getFileName frame)
