@@ -124,6 +124,18 @@ Combining profiler events across hosts yields a picture of the distributed syste
                        (top 10 :metric
                             index
                             (with :state "expired" index))))))
+
+; I usually have a top-level splitp to route events to various subsystems.
+(let [index (index)]
+ (streams
+  (splitp re-find service
+    ; Route profiler events to the profiler
+    "#^.profiler " (profiler index)
+
+    ...
+
+    ; Index anything else
+    index)))
 ```
 
 Fire up a grid in Riemann-dash sorted by `metric`, and choose a query to view
