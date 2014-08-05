@@ -18,7 +18,7 @@
          (map (fn [[^StackTraceElement frame
                     {:keys [self-time top-trace top-trace-time]}]]
                 {:host        (or host (client/localhost))
-                 :service     (str prefix "profiler fn "
+                 :service     (str (trim prefix) " profiler fn "
                                    (.getClassName frame) " "
                                    (.getMethodName frame))
                  :file        (.getFileName frame)
