@@ -127,7 +127,7 @@ Combining profiler events across hosts yields a picture of the distributed syste
 ```
 
 Fire up a grid in Riemann-dash sorted by `metric`, and choose a query to view
-your particular application. Here, I'm looking at the `"whitewash "` prefix,
+your particular application. Here, I'm looking at the `"whitewash"` prefix,
 and excluding the `epollWait` function, since it's not actually doing real
 work.
 
