@@ -1,8 +1,8 @@
 (ns riemann.jvm-profiler.core-test
-  (:require [clojure.test :as test]
-            [riemann.jvm-profiler :refer :all]))
+  (:require [riemann.jvm-profiler :as profiler])
+  (:use [clojure.test]))
 
-(test/deftest format-prefix-test
-  (test/testing "format-prefix"
-    (test/is (= (format-prefix "") "")
-    (test/is (= (format-prefix "myapp") "myapp ")))))
+(deftest format-prefix-test
+  (testing "format-prefix"
+    (is (= (profiler/format-prefix "") "")
+    (is (= (profiler/format-prefix "myapp") "myapp ")))))
