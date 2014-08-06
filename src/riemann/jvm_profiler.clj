@@ -10,6 +10,10 @@
 
 (def tags ["jvm" "profile"])
 
+(defn format-prefix [prefix]
+  (if (= prefix "") "" (str (string/trim prefix) " ")))
+
+
 (defn report
   "Send information about stack statistics to Riemann."
   [client dt host prefix stats]
@@ -19,7 +23,7 @@
          (map (fn [[^StackTraceElement frame
                     {:keys [self-time top-trace top-trace-time]}]]
                 {:host        (or host (client/localhost))
-                 :service     (str (string/trim prefix) " profiler fn "
+                 :service     (str (format-prefix prefix) "profiler fn "
                                    (.getClassName frame) " "
                                    (.getMethodName frame))
                  :file        (.getFileName frame)
@@ -30,7 +34,7 @@
                  :ttl         (* 2 dt)
                  :tags        tags}))
          (concat [{:host    (or host (client/localhost))
-                   :service (str (string/trim prefix) " profiler rate")
+                   :service (str (format-prefix prefix) "profiler rate")
                    :state   "ok"
                    :metric  rate
                    :ttl     (* 2 dt)
