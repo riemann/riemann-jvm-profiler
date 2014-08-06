@@ -1,6 +1,7 @@
 (ns riemann.jvm-profiler
   (:require [riemann.jvm-profiler.stack :as stack]
-            [riemann.client.http :as client])
+            [riemann.client.http :as client]
+            [clojure.string :as string])
   (:import (java.lang StackTraceElement)
            (java.lang.management ManagementFactory)))
 
@@ -8,6 +9,10 @@
 (def localhost client/localhost)
 
 (def tags ["jvm" "profile"])
+
+(defn format-prefix [prefix]
+  (if (= prefix "") "" (str (string/trim prefix) " ")))
+
 
 (defn report
   "Send information about stack statistics to Riemann."
@@ -18,7 +23,7 @@
          (map (fn [[^StackTraceElement frame
                     {:keys [self-time top-trace top-trace-time]}]]
                 {:host        (or host (client/localhost))
-                 :service     (str prefix "profiler fn "
+                 :service     (str (format-prefix prefix) "profiler fn "
                                    (.getClassName frame) " "
                                    (.getMethodName frame))
                  :file        (.getFileName frame)
@@ -29,7 +34,7 @@
                  :ttl         (* 2 dt)
                  :tags        tags}))
          (concat [{:host    (or host (client/localhost))
-                   :service (str prefix "profiler rate")
+                   :service (str (format-prefix prefix) "profiler rate")
                    :state   "ok"
                    :metric  rate
                    :ttl     (* 2 dt)
