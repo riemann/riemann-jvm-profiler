@@ -30,7 +30,7 @@
                  :ttl         (* 2 dt)
                  :tags        tags}))
          (concat [{:host    (or host (client/localhost))
-                   :service (str prefix "profiler rate")
+                   :service (str (string/trim prefix) " profiler rate")
                    :state   "ok"
                    :metric  rate
                    :ttl     (* 2 dt)
