@@ -132,7 +132,7 @@ Combining profiler events across hosts yields a picture of the distributed syste
  (streams
   (splitp re-find service
     ; Route profiler events to the profiler
-    "#^.profiler " (profiler index)
+    #"^.profiler " (profiler index)
 
     ...
 
