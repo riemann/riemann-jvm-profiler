@@ -97,6 +97,8 @@ this should not be a huge problem.
 Combining profiler events across hosts yields a picture of the distributed system's hotspots as a whole. You can interpret the individual (and summed) metrics as being an approximate least upper bound on the number of cores engaged in running that function. Here's a small profiler-aggregation stream:
 
 ```clj
+(require '[clojure.string :as str])
+
 (defn profiler [index]
   (where (not (expired? event))
          (splitp re-matches service
@@ -109,7 +111,7 @@ Combining profiler events across hosts yields a picture of the distributed syste
 
                                       ; Distinct number of hosts
                                       (smap folds/count
-                                            (adjust [:service string/replace
+                                            (adjust [:service str/replace
                                                      "rate" "hosts"]
                                                     (with :host nil
                                                           index))))
