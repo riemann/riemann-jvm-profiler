@@ -105,27 +105,23 @@ Combining profiler events across hosts yields a picture of the distributed syste
                  ; Aggregate rate of samples taken
                  #".*profiler rate" (coalesce
                                       ; Total sample rate
-                                      (smap folds/sum
-                                            (with :host nil
-                                                  index))
+                                      (combine folds/sum
+                                               (with :host nil
+                                                     index))
 
                                       ; Distinct number of hosts
-                                      (smap folds/count
-                                            (adjust [:service str/replace
-                                                     "rate" "hosts"]
-                                                    (with :host nil
-                                                          index))))
+                                      (combine folds/count
+                                               (adjust [:service str/replace
+                                                        "rate" "hosts"]
+                                                       (with :host nil
+                                                             index))))
 
                  ; Flatten function times across hosts, updating every 60s.
                  #".*profiler fn .+"
-                 (pipe - (by :service
-                             (coalesce 60
-                                       (smap folds/sum
-                                             (with :host nil -))))
-                       ; And index the top 10.
-                       (top 10 :metric
-                            index
-                            (with :state "expired" index))))))
+                 (by :service
+                     (coalesce 60
+                               (combine folds/sum
+                                        (with :host nil index)))))))
 
 ; I usually have a top-level splitp to route events to various subsystems.
 (let [index (index)]
