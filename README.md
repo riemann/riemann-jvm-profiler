@@ -105,23 +105,23 @@ Combining profiler events across hosts yields a picture of the distributed syste
                  ; Aggregate rate of samples taken
                  #".*profiler rate" (coalesce
                                       ; Total sample rate
-                                      (combine folds/sum
-                                               (with :host nil
-                                                     index))
+                                      (smap folds/sum
+                                            (with :host nil
+                                                  index))
 
                                       ; Distinct number of hosts
-                                      (combine folds/count
-                                               (adjust [:service str/replace
-                                                        "rate" "hosts"]
-                                                       (with :host nil
-                                                             index))))
+                                      (smap folds/count
+                                            (adjust [:service str/replace
+                                                     "rate" "hosts"]
+                                                    (with :host nil
+                                                          index))))
 
                  ; Flatten function times across hosts, updating every 60s.
                  #".*profiler fn .+"
                  (by :service
                      (coalesce 60
-                               (combine folds/sum
-                                        (with :host nil index)))))))
+                               (smap folds/sum
+                                        (with {:host nil :ttl 120} index)))))))
 
 ; I usually have a top-level splitp to route events to various subsystems.
 (let [index (index)]
