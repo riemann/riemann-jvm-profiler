@@ -118,10 +118,14 @@ Combining profiler events across hosts yields a picture of the distributed syste
 
                  ; Flatten function times across hosts, updating every 60s.
                  #".*profiler fn .+"
-                 (by :service
-                     (coalesce 60
-                               (smap folds/sum
-                                        (with {:host nil :ttl 120} index)))))))
+                 (pipe - (by :service
+                             (coalesce 60
+                                       (smap folds/sum
+                                             (with {:host nil :ttl 120} -))))
+                       ; And index the top 10.
+                       (top 10 :metric
+                            index
+                            (with :state "expired" index))))))
 
 ; I usually have a top-level splitp to route events to various subsystems.
 (let [index (index)]
