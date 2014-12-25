@@ -121,7 +121,7 @@ Combining profiler events across hosts yields a picture of the distributed syste
                  (pipe - (by :service
                              (coalesce 60
                                        (smap folds/sum
-                                             (with :host nil -))))
+                                             (with {:host nil :ttl 120} -))))
                        ; And index the top 10.
                        (top 10 :metric
                             index
