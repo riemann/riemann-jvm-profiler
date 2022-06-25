@@ -1,0 +1,66 @@
+name: Riemann JVM Profiler testing
+
+on: [push]
+
+jobs:
+  test:
+
+    strategy:
+      matrix:
+        java: [ '8', '11', '13', '15', '16', '17' ]
+      fail-fast: false
+    name: Java ${{ matrix.Java }}
+
+    runs-on: ubuntu-latest
+
+    env:
+      JVM_OPTS: -Xmx3200m
+      LEIN_ROOT: nbd
+  
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.java }}
+      - name: Install clojure tools
+        uses: DeLaGuardo/setup-clojure@7.0
+        with:
+          cli: 1.10.1.693       # Clojure CLI based on tools.deps
+          lein: 2.9.1           # Leiningen
+      - name: Install deps
+        run: lein deps
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ matrix.java }}-maven-${{ hashFiles('**/project.clj') }}
+      - name: Run test2junit
+        run: lein test2junit
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Results (Java ${{ matrix.java }})
+          path: target/test2junit/
+
+  publish-test-results:
+    name: "Publish Tests Results"
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+    if: always()
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          files: "artifacts/**/*.xml"
