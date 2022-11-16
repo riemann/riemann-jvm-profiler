@@ -1,4 +1,4 @@
-(defproject riemann-jvm-profiler "0.1.1-SNAPSHOT"
+(defproject riemann-jvm-profiler "0.1.1"
   :description "Distributed JVM profiling for Riemann."
   :url "http://github.com/riemann/riemann-jvm-profiler"
   :license {:name "Eclipse Public License"
