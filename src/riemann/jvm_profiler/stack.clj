@@ -174,6 +174,7 @@
                           (/ 1e6 target-load)
                           (max 1)
                           (min 1000)
+                          (long)
                           (Thread/sleep))
                       t0)
                     (catch Exception e
